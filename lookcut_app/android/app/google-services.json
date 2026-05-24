@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "398116489238",
+    "project_id": "lookcut-e152e",
+    "storage_bucket": "lookcut-e152e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:398116489238:android:9a1a6978ca9f0486cd0d37",
+        "android_client_info": {
+          "package_name": "com.example.lookcut_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXDsk1VRTNVuvCuQ1I-7bXvuVWKpC3vMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
