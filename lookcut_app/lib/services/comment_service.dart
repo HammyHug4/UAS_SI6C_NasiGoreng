@@ -1,16 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-//import 'package:pangkas_mbut/models/comment_model.dart';
+import 'package:pangkas_mbut/models/comment_model.dart';
 
 class CommentService {
-
-  // COLLECTION
   static CollectionReference commentCollection =
       FirebaseFirestore.instance.collection(
     'comments',
   );
-
-  // ADD COMMENT
   static Future<void> addComment({
     required String postId,
     required String userId,
@@ -38,8 +34,62 @@ class CommentService {
       );
     }
   }
+  static Stream<List<CommentModel>>
+      getCommentsByPost(
+    String postId,
+  ) {
 
-  // DELETE COMMENT
+    return commentCollection
+        .where(
+          'post_id',
+          isEqualTo: postId,
+        )
+        .snapshots()
+        .map(
+          (snapshot) {
+            final comments = snapshot.docs
+                .map(
+                  (doc) {
+
+                    final data =
+                        doc.data()
+                            as Map<String, dynamic>;
+
+                    return CommentModel(
+                      id: doc.id,
+                      comment: data['comment'],
+                      userId: data['user_id'],
+                      userName: data['user_name'],
+                      postId: data['post_id'],
+                      createdAt: data['created_at'],
+                    );
+                  },
+                )
+                .toList();
+
+            comments.sort((a, b) {
+              final aDate = a.createdAt?.toDate();
+              final bDate = b.createdAt?.toDate();
+
+              if (aDate == null && bDate == null) {
+                return 0;
+              }
+
+              if (aDate == null) {
+                return 1;
+              }
+
+              if (bDate == null) {
+                return -1;
+              }
+
+              return bDate.compareTo(aDate);
+            });
+
+            return comments;
+          },
+        );
+  }
   static Future<void> deleteComment(
     String commentId,
   ) async {
@@ -55,8 +105,6 @@ class CommentService {
       );
     }
   }
-
-  // UPDATE COMMENT
   static Future<void> updateComment({
     required String commentId,
     required String newComment,
