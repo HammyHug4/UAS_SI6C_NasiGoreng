@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:pangkas_mbut/models/post_model.dart';
 
 class PostService {
-  // COLLECTION
   static CollectionReference postCollection = FirebaseFirestore.instance
       .collection('posts');
 
-  // ADD POST
   static Future<void> addPost(PostModel post) async {
     try {
       await postCollection.add(post.toDocument());
@@ -16,7 +14,6 @@ class PostService {
     }
   }
 
-  // GET ALL POSTS
   static Stream<List<PostModel>> getPostList() {
     return postCollection
         .orderBy('created_at', descending: true)
@@ -27,7 +24,6 @@ class PostService {
         );
   }
 
-  // GET POST BY CATEGORY
   static Stream<List<PostModel>> getPostByCategory(String category) {
     return postCollection
         .where('category', isEqualTo: category)
@@ -60,7 +56,6 @@ class PostService {
         });
   }
 
-  // GET USER POSTS
   static Stream<List<PostModel>> getUserPosts(String userId) {
     return postCollection
         .where('user_id', isEqualTo: userId)
@@ -72,7 +67,6 @@ class PostService {
         );
   }
 
-  // GET SINGLE POST
   static Future<PostModel?> getSinglePost(String postId) async {
     try {
       final DocumentSnapshot document = await postCollection.doc(postId).get();
