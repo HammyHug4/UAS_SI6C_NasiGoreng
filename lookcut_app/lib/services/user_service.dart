@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pangkas_mbut/models/user_model.dart';
+import 'package:lookcut_app/models/user_model.dart';
 
 class UserService {
   static CollectionReference userCollection = FirebaseFirestore.instance
