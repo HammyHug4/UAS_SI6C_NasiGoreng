@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pangkas_mbut/models/post_model.dart';
+import 'package:lookcut_app/models/post_model.dart';
 
 class PostService {
   static CollectionReference postCollection = FirebaseFirestore.instance
