@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
-/// The translations for Indonesian (`id`).
+// untuk translete ke bahasa Indonesia
 class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
