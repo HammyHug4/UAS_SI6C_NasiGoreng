@@ -30,4 +30,51 @@ class _PostListItemState
 
     checkFavorite();
   }
+
+    // CHECK FAVORITE
+  Future<void> checkFavorite() async {
+
+    final userId =
+        FirebaseAuth
+                .instance
+                .currentUser
+                ?.uid ??
+            '';
+
+    final favorite =
+        await FavoriteService.isFavorite(
+      userId: userId,
+      postId: widget.post.id ?? '',
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      isFavorite = favorite;
+    });
+  }
+
+  // TOGGLE FAVORITE
+  Future<void> toggleFavorite() async {
+
+    final userId =
+        FirebaseAuth
+                .instance
+                .currentUser
+                ?.uid ??
+            '';
+
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)
+                .pleaseLoginFirst,
+          ),
+        ),
+      );
+
+      return;
     }
+  }
