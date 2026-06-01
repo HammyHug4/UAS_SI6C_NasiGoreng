@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pangkas_rambut/l10n/generated/app_localizations.dart';
-import 'package:pangkas_rambut/models/post_model.dart';
-import 'package:pangkas_rambut/services/favorite_service.dart';
-import 'package:pangkas_rambut/screens/detail_screen.dart';
+import 'package:lookcut_app/l10n/generated/app_localizations.dart';
+import 'package:lookcut_app/models/post_model.dart';
+import 'package:lookcut_app/services/favorite_service.dart';
+import 'package:lookcut_app/screens/detail_screen.dart';
 
 class PostListItem extends StatefulWidget {
   final PostModel post;
