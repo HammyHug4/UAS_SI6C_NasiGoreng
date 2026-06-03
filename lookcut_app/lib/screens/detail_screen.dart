@@ -9,6 +9,7 @@ import 'package:lookcut_app/services/comment_service.dart';
 import 'package:lookcut_app/services/favorite_service.dart';
 import 'package:lookcut_app/services/post_services.dart';
 import 'package:lookcut_app/widgets/comment_tile.dart';
+import 'package:lookcut_app/screens/map_detail_screen.dart';
 
 class DetailScreen extends StatefulWidget {
   final PostModel post;
