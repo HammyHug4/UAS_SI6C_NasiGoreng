@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // untuk translete ke bahasa Indonesia
