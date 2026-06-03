@@ -132,4 +132,150 @@ class _MapDetailScreenState
     );
   }
 
- 
+  // LOCATION CARD
+  Widget buildLocationCard() {
+    final l10n = AppLocalizations.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                    Colors.orange.shade100,
+                child: Icon(
+                  Icons.location_on,
+                  color: Colors.orange.shade700,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.barbershopLocation,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.post.barberName ?? '',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // LATITUDE
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius:
+                  BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.my_location),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    '${l10n.latitude} : $latitude',
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // LONGITUDE
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius:
+                  BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.explore),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    '${l10n.longitude} : $longitude',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: Text(l10n.locationDetail),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          buildMap(),
+          const SizedBox(height: 20),
+          buildLocationCard(),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: openGoogleMaps,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              icon: const Icon(Icons.directions),
+              label: Text(l10n.openInGoogleMaps),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

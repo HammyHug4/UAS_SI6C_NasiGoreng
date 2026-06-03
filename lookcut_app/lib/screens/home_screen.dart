@@ -6,6 +6,9 @@ import 'package:lookcut_app/l10n/generated/app_localizations.dart';
 import 'package:lookcut_app/services/post_services.dart';
 import 'package:lookcut_app/services/user_service.dart';
 import 'package:lookcut_app/widgets/post_list_item.dart';
+import 'package:lookcut_app/screens/add_post_screen.dart';
+import 'package:lookcut_app/screens/favorite_screen.dart';
+import 'package:lookcut_app/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
