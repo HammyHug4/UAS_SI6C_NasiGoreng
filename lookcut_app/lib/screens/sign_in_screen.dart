@@ -46,7 +46,7 @@ class _SignInScreenState extends State<SignInScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'LOOKCUT MAPS',
+              'LOOKCUT APP',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 30),
