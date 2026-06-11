@@ -5,6 +5,8 @@ import 'package:lookcut_app/l10n/generated/app_localizations.dart';
 import 'package:lookcut_app/models/post_model.dart';
 import 'package:lookcut_app/services/favorite_service.dart';
 import 'package:lookcut_app/screens/detail_screen.dart';
+import 'package:lookcut_app/screens/edit_post_screen.dart';
+import 'package:lookcut_app/services/post_services.dart';
 
 class PostListItem extends StatefulWidget {
   final PostModel post;
@@ -383,25 +385,28 @@ class _PostListItemState
         ),
 
         // OWNER MENU
-        if (FirebaseAuth.instance
-                .currentUser
-                ?.uid ==
-            widget.post.userId)
-
+        if (FirebaseAuth.instance.currentUser?.uid == widget.post.userId)
           PopupMenuButton(
+            onSelected: (value) {
+              if (value == 'edit') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditPostScreen(post: widget.post),
+                  ),
+                );
+              }
+
+              if (value == 'delete') {
+                PostService.deletePost(widget.post);
+              }
+            },
+
             itemBuilder: (context) {
-
               return [
+                PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
 
-                PopupMenuItem(
-                  value: 'edit',
-                  child: Text(l10n.edit),
-                ),
-
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Text(l10n.delete),
-                ),
+                PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
               ];
             },
           ),
