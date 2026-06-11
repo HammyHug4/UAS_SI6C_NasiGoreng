@@ -90,4 +90,12 @@ class PostService {
       debugPrint('Delete Post Error : $e');
     }
   }
+
+  static Future<void> updatePost(String id, Map<String, dynamic> data) async {
+    try {
+      await postCollection.doc(id).update(data);
+    } catch (e) {
+      debugPrint('Update Post Error : $e');
+    }
+  }
 }
