@@ -10,6 +10,7 @@ class PostModel {
   String? longitude;
   String? userId;
   String? userFullName;
+  String? locationName;
   Timestamp? createdAt;
 
   PostModel({
@@ -22,12 +23,12 @@ class PostModel {
     this.longitude,
     this.userId,
     this.userFullName,
+    this.locationName,
     this.createdAt,
   });
 
   factory PostModel.fromDocument(DocumentSnapshot doc) {
-    Map<String, dynamic> data =
-        doc.data() as Map<String, dynamic>;
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     return PostModel(
       id: doc.id,
@@ -40,6 +41,7 @@ class PostModel {
       userId: data['user_id'],
       userFullName: data['user_full_name'],
       createdAt: data['created_at'],
+      locationName: data['location_name'],
     );
   }
 
@@ -53,6 +55,7 @@ class PostModel {
       'longitude': longitude,
       'user_id': userId,
       'user_full_name': userFullName,
+      'location_name': locationName,
       'created_at': Timestamp.now(),
     };
   }
