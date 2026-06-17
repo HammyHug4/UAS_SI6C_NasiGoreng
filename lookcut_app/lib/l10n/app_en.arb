@@ -61,5 +61,10 @@
   "barbershopLocation": "Barbershop Location",
   "latitude": "Latitude",
   "longitude": "Longitude",
-  "openInGoogleMaps": "Open in Google Maps"
+  "openInGoogleMaps": "Open in Google Maps",
+  "copyAddress": "Copy Address",
+  "addressCopied": "Address copied to clipboard",
+  "fromYourLocation": "from your location",
+  "calculatingDistance": "Calculating distance...",
+  "distanceUnavailable": "Distance unavailable"
 }

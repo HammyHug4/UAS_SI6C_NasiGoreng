@@ -1,6 +1,10 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
-// untuk tranlete ke bahasa inggris
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
@@ -189,4 +193,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get copyAddress => 'Copy Address';
+
+  @override
+  String get addressCopied => 'Address copied to clipboard';
+
+  @override
+  String get fromYourLocation => 'from your location';
+
+  @override
+  String get calculatingDistance => 'Calculating distance...';
+
+  @override
+  String get distanceUnavailable => 'Distance unavailable';
 }

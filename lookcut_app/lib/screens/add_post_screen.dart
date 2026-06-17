@@ -241,6 +241,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         barberName: barberNameController.text.trim(),
         description: descriptionController.text.trim(),
         category: selectedCategory,
+        locationName: locationNameController.text.trim(),
         latitude: latitude,
         longitude: longitude,
         userId: user.uid,

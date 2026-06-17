@@ -469,6 +469,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open in Google Maps'**
   String get openInGoogleMaps;
+
+  /// No description provided for @copyAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Address'**
+  String get copyAddress;
+
+  /// No description provided for @addressCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Address copied to clipboard'**
+  String get addressCopied;
+
+  /// No description provided for @fromYourLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'from your location'**
+  String get fromYourLocation;
+
+  /// No description provided for @calculatingDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating distance...'**
+  String get calculatingDistance;
+
+  /// No description provided for @distanceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance unavailable'**
+  String get distanceUnavailable;
 }
 
 class _AppLocalizationsDelegate

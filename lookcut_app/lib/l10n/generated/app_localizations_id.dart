@@ -1,7 +1,10 @@
-
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
-// untuk translete ke bahasa Indonesia
+// ignore_for_file: type=lint
+
+/// The translations for Indonesian (`id`).
 class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
@@ -191,4 +194,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get openInGoogleMaps => 'Buka di Google Maps';
+
+  @override
+  String get copyAddress => 'Salin Alamat';
+
+  @override
+  String get addressCopied => 'Alamat disalin ke clipboard';
+
+  @override
+  String get fromYourLocation => 'dari lokasi Anda';
+
+  @override
+  String get calculatingDistance => 'Menghitung jarak...';
+
+  @override
+  String get distanceUnavailable => 'Jarak tidak tersedia';
 }

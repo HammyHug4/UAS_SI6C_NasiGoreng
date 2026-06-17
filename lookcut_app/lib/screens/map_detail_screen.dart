@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,19 +9,13 @@ import 'package:lookcut_app/models/post_model.dart';
 class MapDetailScreen extends StatefulWidget {
   final PostModel post;
 
-  const MapDetailScreen({
-    super.key,
-    required this.post,
-  });
+  const MapDetailScreen({super.key, required this.post});
 
   @override
-  State<MapDetailScreen> createState() =>
-      _MapDetailScreenState();
+  State<MapDetailScreen> createState() => _MapDetailScreenState();
 }
 
-class _MapDetailScreenState
-    extends State<MapDetailScreen> {
-
+class _MapDetailScreenState extends State<MapDetailScreen> {
   late double latitude;
   late double longitude;
 
@@ -28,15 +23,9 @@ class _MapDetailScreenState
   void initState() {
     super.initState();
 
-    latitude = double.tryParse(
-          widget.post.latitude ?? '0',
-        ) ??
-        0;
+    latitude = double.tryParse(widget.post.latitude ?? '0') ?? 0;
 
-    longitude = double.tryParse(
-          widget.post.longitude ?? '0',
-        ) ??
-        0;
+    longitude = double.tryParse(widget.post.longitude ?? '0') ?? 0;
   }
 
   // OPEN GOOGLE MAPS
@@ -46,19 +35,42 @@ class _MapDetailScreenState
     );
 
     if (await canLaunchUrl(googleMapUrl)) {
-      await launchUrl(
-        googleMapUrl,
-        mode: LaunchMode.externalApplication,
-      );
+      await launchUrl(googleMapUrl, mode: LaunchMode.externalApplication);
     }
+  }
+
+  Future<void> copyAddress() async {
+    final l10n = AppLocalizations.of(context);
+    final address = addressText;
+
+    if (address.isEmpty) return;
+
+    await Clipboard.setData(ClipboardData(text: address));
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.addressCopied)));
+  }
+
+  String get addressText {
+    final locationName = widget.post.locationName?.trim() ?? '';
+
+    if (locationName.isNotEmpty) {
+      return locationName;
+    }
+
+    if (latitude == 0 && longitude == 0) {
+      return '';
+    }
+
+    return '$latitude, $longitude';
   }
 
   // BUILD MAP
   Widget buildMap() {
-    final LatLng point = LatLng(
-      latitude,
-      longitude,
-    );
+    final LatLng point = LatLng(latitude, longitude);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
@@ -68,20 +80,15 @@ class _MapDetailScreenState
           options: MapOptions(
             initialCenter: point,
             initialZoom: 15,
-            interactionOptions:
-                const InteractionOptions(
-              flags:
-                  InteractiveFlag.all,
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.all,
             ),
           ),
           children: [
-
             // MAP TILE
             TileLayer(
-              urlTemplate:
-                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName:
-                  'com.lookcut.maps',
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.lookcut.maps',
             ),
 
             // MARKER
@@ -94,24 +101,19 @@ class _MapDetailScreenState
                   child: Column(
                     children: [
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.orange,
-                          borderRadius:
-                              BorderRadius.circular(
-                            30,
-                          ),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                         child: Text(
                           widget.post.barberName ?? '',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -135,14 +137,14 @@ class _MapDetailScreenState
   // LOCATION CARD
   Widget buildLocationCard() {
     final l10n = AppLocalizations.of(context);
+    final address = addressText;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -152,25 +154,19 @@ class _MapDetailScreenState
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor:
-                    Colors.orange.shade100,
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.orange.shade700,
-                ),
+                backgroundColor: Colors.orange.shade100,
+                child: Icon(Icons.location_on, color: Colors.orange.shade700),
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       l10n.barbershopLocation,
@@ -182,9 +178,7 @@ class _MapDetailScreenState
                     const SizedBox(height: 4),
                     Text(
                       widget.post.barberName ?? '',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade700),
                     ),
                   ],
                 ),
@@ -194,23 +188,36 @@ class _MapDetailScreenState
 
           const SizedBox(height: 20),
 
+          // ADDRESS
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.place),
+                const SizedBox(width: 10),
+                Expanded(child: Text(address.isEmpty ? '-' : address)),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
           // LATITUDE
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
-              borderRadius:
-                  BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               children: [
                 const Icon(Icons.my_location),
                 const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    '${l10n.latitude} : $latitude',
-                  ),
-                ),
+                Expanded(child: Text('${l10n.latitude} : $latitude')),
               ],
             ),
           ),
@@ -222,35 +229,47 @@ class _MapDetailScreenState
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
-              borderRadius:
-                  BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               children: [
                 const Icon(Icons.explore),
                 const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    '${l10n.longitude} : $longitude',
-                  ),
-                ),
+                Expanded(child: Text('${l10n.longitude} : $longitude')),
               ],
+            ),
+          ),
+
+          const SizedBox(height: 18),
+
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: address.isNotEmpty ? copyAddress : null,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.orange.shade700,
+                side: BorderSide(color: Colors.orange.shade300),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              icon: const Icon(Icons.copy),
+              label: Text(l10n.copyAddress),
             ),
           ),
         ],
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        title: Text(l10n.locationDetail),
-      ),
+      appBar: AppBar(title: Text(l10n.locationDetail)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

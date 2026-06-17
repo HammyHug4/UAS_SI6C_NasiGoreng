@@ -61,5 +61,10 @@
   "barbershopLocation": "Lokasi Barbershop",
   "latitude": "Lintang",
   "longitude": "Bujur",
-  "openInGoogleMaps": "Buka di Google Maps"
+  "openInGoogleMaps": "Buka di Google Maps",
+  "copyAddress": "Salin Alamat",
+  "addressCopied": "Alamat disalin ke clipboard",
+  "fromYourLocation": "dari lokasi Anda",
+  "calculatingDistance": "Menghitung jarak...",
+  "distanceUnavailable": "Jarak tidak tersedia"
 }

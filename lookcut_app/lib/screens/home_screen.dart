@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lookcut_app/models/user_model.dart';
 import 'package:lookcut_app/l10n/generated/app_localizations.dart';
+import 'package:lookcut_app/services/location_service.dart';
 import 'package:lookcut_app/services/post_services.dart';
 import 'package:lookcut_app/services/user_service.dart';
 import 'package:lookcut_app/widgets/post_list_item.dart';
@@ -14,26 +15,27 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() =>
-      _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
 
   String? selectedCategory;
+  double? userLatitude;
+  double? userLongitude;
+  bool isLoadingUserLocation = true;
 
-  final TextEditingController searchController =
-      TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   List<String> get categories {
-    return [
-      'Barbershop',
-      'Fade Cut',
-      'Pompadour',
-      'Undercut',
-      'Hair Tattoo',
-    ];
+    return ['Barbershop', 'Fade Cut', 'Pompadour', 'Undercut', 'Hair Tattoo'];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadCurrentLocation();
   }
 
   @override
@@ -47,12 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
     await FirebaseAuth.instance.signOut();
   }
 
+  Future<void> loadCurrentLocation() async {
+    final position = await LocationService.getCurrentLocation(context: context);
+
+    if (!mounted) return;
+
+    setState(() {
+      userLatitude = position?.latitude;
+      userLongitude = position?.longitude;
+      isLoadingUserLocation = false;
+    });
+  }
+
   // Generate avatar user
   String generateAvatarUrl(String? fullName) {
-    final formattedName =
-        (fullName ?? 'User')
-            .trim()
-            .replaceAll(' ', '+');
+    final formattedName = (fullName ?? 'User').trim().replaceAll(' ', '+');
 
     return 'https://ui-avatars.com/api/?name=$formattedName&background=ff9800&color=ffffff&size=256';
   }
@@ -65,22 +76,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (photoBase64 != null && photoBase64.isNotEmpty) {
       try {
-        return MemoryImage(
-          base64Decode(photoBase64),
-        );
+        return MemoryImage(base64Decode(photoBase64));
       } on FormatException {
         return NetworkImage(
-          generateAvatarUrl(
-            profile?.fullName ?? user?.displayName,
-          ),
+          generateAvatarUrl(profile?.fullName ?? user?.displayName),
         );
       }
     }
 
     return NetworkImage(
-      generateAvatarUrl(
-        profile?.fullName ?? user?.displayName,
-      ),
+      generateAvatarUrl(profile?.fullName ?? user?.displayName),
     );
   }
 
@@ -92,63 +97,51 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
         return SafeArea(
-  child: SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  l10n.selectCategory,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      l10n.selectCategory,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                leading: const Icon(Icons.clear),
-                title: Text(l10n.allCategory),
-                onTap: () {
-                  Navigator.pop(context, null);
-                },
-              ),
-              const Divider(),
-              ...categories.map(
-                (category) {
-                  return ListTile(
-                    leading: const Icon(Icons.cut),
-                    title: Text(category),
-                    trailing:
-                        selectedCategory == category
-                            ? const Icon(
-                                Icons.check_circle,
-                                color: Colors.orange,
-                              )
-                            : null,
+                  const SizedBox(height: 20),
+                  ListTile(
+                    leading: const Icon(Icons.clear),
+                    title: Text(l10n.allCategory),
                     onTap: () {
-                      Navigator.pop(
-                        context,
-                        category,
-                      );
+                      Navigator.pop(context, null);
                     },
-                  );
-                },
+                  ),
+                  const Divider(),
+                  ...categories.map((category) {
+                    return ListTile(
+                      leading: const Icon(Icons.cut),
+                      title: Text(category),
+                      trailing: selectedCategory == category
+                          ? const Icon(Icons.check_circle, color: Colors.orange)
+                          : null,
+                      onTap: () {
+                        Navigator.pop(context, category);
+                      },
+                    );
+                  }),
+                ],
               ),
-            ],
+            ),
           ),
-    ),
-  ),
         );
       },
     );
@@ -165,18 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(
-        top: 20,
-        left: 20,
-        right: 20,
-        bottom: 30,
-      ),
+      padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 30),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.orange.shade400,
-            Colors.deepOrange.shade500,
-          ],
+          colors: [Colors.orange.shade400, Colors.deepOrange.shade500],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -193,14 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 : UserService.getUser(user.uid),
             builder: (context, snapshot) {
               final profile = snapshot.data;
-              final fullName =
-                  profile?.fullName ??
-                  user?.displayName ??
-                  '';
-              final email =
-                  profile?.email ??
-                  user?.email ??
-                  '';
+              final fullName = profile?.fullName ?? user?.displayName ?? '';
+              final email = profile?.email ?? user?.email ?? '';
 
               return Row(
                 children: [
@@ -214,8 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           l10n.welcomeBack,
@@ -236,9 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 4),
                         Text(
                           email,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                          ),
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       ],
                     ),
@@ -253,25 +229,19 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius:
-                  BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                hintText:
-                    l10n.searchBarbershop,
-                prefixIcon:
-                    const Icon(Icons.search),
+                hintText: l10n.searchBarbershop,
+                prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   onPressed: showCategoryFilter,
-                  icon: const Icon(
-                    Icons.filter_list,
-                  ),
+                  icon: const Icon(Icons.filter_list),
                 ),
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none,
                 ),
               ),
@@ -298,10 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                deleteIcon: const Icon(
-                  Icons.close,
-                  size: 18,
-                ),
+                deleteIcon: const Icon(Icons.close, size: 18),
                 onDeleted: () {
                   setState(() {
                     selectedCategory = null;
@@ -364,7 +331,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => PostListItem(post: posts[index]),
+            (context, index) => PostListItem(
+              post: posts[index],
+              userLatitude: userLatitude,
+              userLongitude: userLongitude,
+              isLoadingUserLocation: isLoadingUserLocation,
+            ),
             childCount: posts.length,
           ),
         );

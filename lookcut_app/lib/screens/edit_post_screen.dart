@@ -9,10 +9,7 @@ import 'package:lookcut_app/services/post_services.dart';
 class EditPostScreen extends StatefulWidget {
   final PostModel post;
 
-  const EditPostScreen({
-    super.key,
-    required this.post,
-  });
+  const EditPostScreen({super.key, required this.post});
 
   @override
   State<EditPostScreen> createState() => _EditPostScreenState();
@@ -32,13 +29,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   bool isGettingLocation = false;
 
   List<String> get categories {
-    return [
-      'Barbershop',
-      'Fade Cut',
-      'Pompadour',
-      'Undercut',
-      'Hair Tattoo',
-    ];
+    return ['Barbershop', 'Fade Cut', 'Pompadour', 'Undercut', 'Hair Tattoo'];
   }
 
   @override
@@ -74,12 +65,12 @@ class _EditPostScreenState extends State<EditPostScreen> {
   Future<void> pickImage() async {
     final picker = ImagePicker();
 
-    final image = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       final bytes = await image.readAsBytes();
+
+      if (!mounted) return;
 
       setState(() {
         base64Image = base64Encode(bytes);
@@ -93,41 +84,47 @@ class _EditPostScreenState extends State<EditPostScreen> {
     });
 
     try {
-      bool serviceEnabled =
-          await Geolocator.isLocationServiceEnabled();
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+      if (!mounted) return;
 
       if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('GPS belum aktif'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('GPS belum aktif')));
+
+        setState(() {
+          isGettingLocation = false;
+        });
 
         return;
       }
 
-      LocationPermission permission =
-          await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
 
       if (permission == LocationPermission.denied) {
-        permission =
-            await Geolocator.requestPermission();
+        permission = await Geolocator.requestPermission();
+
+        if (!mounted) return;
       }
 
-      Position position =
-          await Geolocator.getCurrentPosition();
+      Position position = await Geolocator.getCurrentPosition();
+
+      if (!mounted) return;
 
       setState(() {
         latitude = position.latitude.toString();
         longitude = position.longitude.toString();
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
+
+    if (!mounted) return;
 
     setState(() {
       isGettingLocation = false;
@@ -138,9 +135,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
         return Padding(
@@ -152,10 +147,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 leading: const Icon(Icons.content_cut),
                 title: Text(category),
                 trailing: selectedCategory == category
-                    ? const Icon(
-                        Icons.check_circle,
-                        color: Colors.orange,
-                      )
+                    ? const Icon(Icons.check_circle, color: Colors.orange)
                     : null,
                 onTap: () {
                   setState(() {
@@ -186,10 +178,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.image,
-                size: 80,
-              ),
+              Icon(Icons.image, size: 80),
               SizedBox(height: 10),
               Text("Pilih gambar"),
             ],
@@ -216,10 +205,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
             backgroundColor: Colors.white,
             child: IconButton(
               onPressed: pickImage,
-              icon: const Icon(
-                Icons.edit,
-                color: Colors.orange,
-              ),
+              icon: const Icon(Icons.edit, color: Colors.orange),
             ),
           ),
         ),
@@ -236,13 +222,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
         selectedCategory == null ||
         latitude == null ||
         longitude == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Semua data wajib diisi',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Semua data wajib diisi')));
       return;
     }
 
@@ -251,42 +233,32 @@ class _EditPostScreenState extends State<EditPostScreen> {
     });
 
     try {
-      await PostService.updatePost(
-        widget.post.id!,
-        {
-          'image': base64Image,
-          'barber_name':
-              barberNameController.text.trim(),
-          'description':
-              descriptionController.text.trim(),
-          'location_name':
-              locationNameController.text.trim(),
-          'category': selectedCategory,
-          'latitude': latitude,
-          'longitude': longitude,
-        },
-      );
+      await PostService.updatePost(widget.post.id!, {
+        'image': base64Image,
+        'barber_name': barberNameController.text.trim(),
+        'description': descriptionController.text.trim(),
+        'location_name': locationNameController.text.trim(),
+        'category': selectedCategory,
+        'latitude': latitude,
+        'longitude': longitude,
+      });
 
       if (!mounted) return;
 
-      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Posting berhasil diperbarui')),
+      );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Posting berhasil diperbarui',
-          ),
-        ),
-      );
+      Navigator.pop(context, true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Gagal update: $e',
-          ),
-        ),
-      );
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal update: $e')));
     }
+
+    if (!mounted) return;
 
     setState(() {
       isLoading = false;
@@ -296,9 +268,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Post"),
-      ),
+      appBar: AppBar(title: const Text("Edit Post")),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -308,9 +278,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
           TextField(
             controller: barberNameController,
-            decoration: const InputDecoration(
-              labelText: 'Nama Barbershop',
-            ),
+            decoration: const InputDecoration(labelText: 'Nama Barbershop'),
           ),
 
           const SizedBox(height: 15),
@@ -318,18 +286,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
           TextField(
             controller: descriptionController,
             maxLines: 4,
-            decoration: const InputDecoration(
-              labelText: 'Deskripsi',
-            ),
+            decoration: const InputDecoration(labelText: 'Deskripsi'),
           ),
 
           const SizedBox(height: 15),
 
           TextField(
             controller: locationNameController,
-            decoration: const InputDecoration(
-              labelText: 'Nama Lokasi',
-            ),
+            decoration: const InputDecoration(labelText: 'Nama Lokasi'),
           ),
 
           const SizedBox(height: 15),
@@ -337,36 +301,25 @@ class _EditPostScreenState extends State<EditPostScreen> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.category),
-            title: Text(
-              selectedCategory ??
-                  'Pilih Kategori',
-            ),
-            trailing:
-                const Icon(Icons.keyboard_arrow_down),
+            title: Text(selectedCategory ?? 'Pilih Kategori'),
+            trailing: const Icon(Icons.keyboard_arrow_down),
             onTap: showCategoryBottomSheet,
           ),
 
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading:
-                const Icon(Icons.my_location),
+            leading: const Icon(Icons.my_location),
             title: Text(
-              latitude == null
-                  ? 'Ambil Lokasi'
-                  : '$latitude, $longitude',
+              latitude == null ? 'Ambil Lokasi' : '$latitude, $longitude',
             ),
             trailing: isGettingLocation
                 ? const SizedBox(
                     width: 24,
                     height: 24,
-                    child:
-                        CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.gps_fixed),
-            onTap:
-                isGettingLocation ? null : getLocation,
+            onTap: isGettingLocation ? null : getLocation,
           ),
 
           const SizedBox(height: 30),
@@ -374,13 +327,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed:
-                  isLoading ? null : saveEdit,
+              onPressed: isLoading ? null : saveEdit,
               child: isLoading
                   ? const CircularProgressIndicator()
-                  : const Text(
-                      'Simpan Perubahan',
-                    ),
+                  : const Text('Simpan Perubahan'),
             ),
           ),
         ],
